@@ -78,6 +78,16 @@ int main(int argc, char** argv) {
 		goto exit;
 	}
 
+	getchar();
+
+	cbdata.freq = 220.0f;
+
+	getchar();
+	cbdata.freq = 880.0f;
+
+	getchar();
+	cbdata.freq = 440.0f;
+
 	Pa_Sleep(NUM_SECONDS * 1000);
 
 	err = Pa_StopStream(stream);
