@@ -14,16 +14,23 @@ typedef struct {
 typedef struct {
 	sh_sound sound;
 
-	// ASDR
+	// ASDR (Address Space Dayout Randomization)
 	uint16_t A_ticks;
 	uint16_t D_ticks;
 	uint16_t S_ticks;
 	uint16_t R_ticks;
 	sh_sample peak;
 	sh_sample sus;
+
+	// Effects
+	// Planned instrument effects:
+	// delay
+	// vibrato
+	// tremolo
+	// slide
 } sh_instrument;
 
 // Function Definitions
-sh_sample sh_getsample(sh_instrument* ins, sh_tick gticks, sh_hit* hit);
+sherr sh_getsamples(sh_instrument* ins, sh_tick gticks, sh_hit* hit, size_t len, sh_sample* buf);
 
 #endif
