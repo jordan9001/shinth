@@ -30,6 +30,12 @@ sherr sh_input(sh_mixer* mixer, size_t index, sh_note note, sh_tick gticks, int 
 			// update this hit and be done
 			if (down) {
 				hit->start = gticks;
+				switch (mixer->instruments[index].sound.type) {
+				case SH_ONESHOT:
+				case SH_TRIGGER:
+					hit->end = gticks + mixer->instruments[index].sound.length;
+					break;
+				}
 			} else {
 				hit->end = gticks;
 			}
@@ -59,6 +65,8 @@ sherr sh_input(sh_mixer* mixer, size_t index, sh_note note, sh_tick gticks, int 
 	return SH_SUCCESS;
 }
 
-sherr sh_fillbuf(sh_mixer* mixer, sh_tick start, sh_tick end) {
+sherr sh_fillbuf(sh_mixer* mixer, sh_tick start, sh_sample* buf, size_t buflen) {
 	// remove finished hits as you finish them
+	// Also update mixer hits cache thing
+	// TODO
 }

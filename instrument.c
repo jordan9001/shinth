@@ -19,16 +19,28 @@
 
 sherr sh_getsamples(sh_instrument* ins, sh_tick gticks, sh_hit* hit, size_t len, sh_sample* buf) {
 	size_t i, j;
-	sh_ticks playlen;
+	sh_ticks playlen, hitlen;
 	float speed = 1.0f;
 	sh_note note;
+	sherr ret;
+
+	ret = SH_SUCCESS;
 
 	playlen = gticks - hit->start;
 
-	// finish if we finish soon?
-	if (hit->end != 0 && (len > (hit->end - gticks))) {
-		len = (hit->end - gticks);
+	// if we are finishing this play, set the hitlen
+	if (hit->end != 0) {
+		hitlen = (hit->end - hit->start) + ins->R_ticks;
+		if (hitlen - playlen < len) {
+			len = hitlen - playlen;
+			ret = SH_DONE;
+		}
+		// oneshotters are handled by the above, because they set their lenght on start
 	}
+
+	// for oneshotters, check end
+
+	// finish if we finish soon?
 
 	// adjust for speed
 	while (note > 12) {
@@ -51,7 +63,7 @@ sherr sh_getsamples(sh_instrument* ins, sh_tick gticks, sh_hit* hit, size_t len,
 			i = playlen + j;
 			i = (size_t)(speed * (float)i);
 			if (i >= ins->length) {
-				return SH_SUCCESS;
+				return ret;
 			}
 			break;
 		case SH_LOOP:
@@ -74,6 +86,6 @@ sherr sh_getsamples(sh_instrument* ins, sh_tick gticks, sh_hit* hit, size_t len,
 
 		buf[j] += ins->sound.points[i];
 	}
-	return SH_SUCCESS;
+	return ret;
 }
 

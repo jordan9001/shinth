@@ -1,7 +1,10 @@
 #ifndef SHERROR_H
 #define SHERROR_H
 
+// Successes
 #define SH_SUCCESS	0
+#define SH_DONE		1
+// Errors
 #define SH_ERROR	-1
 #define SH_NO_FREE_HIT	-2
 #define SH_UNKNOWN_HIT	-3

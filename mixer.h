@@ -27,7 +27,7 @@ typedef struct {
 
 sherr sh_init_mixer(sh_mixer* mixer, sh_hit* hit_arr, size_t hit_arr_len);
 sherr sh_input(sh_mixer* mixer, size_t index, sh_note note, int down);
-sherr sh_fillbuf(sh_mixer* mixer, sh_tick start, sh_tick end, sh_sample* buf);
+sherr sh_fillbuf(sh_mixer* mixer, sh_tick start, sh_sample* buf, size_t buflen);
  
 /*
 Notes:
