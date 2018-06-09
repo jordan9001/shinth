@@ -19,9 +19,10 @@
 
 sherr sh_getsamples(sh_instrument* ins, sh_tick gticks, sh_hit* hit, size_t len, sh_sample* buf) {
 	size_t i, j;
-	sh_ticks playlen, hitlen;
+	sh_ticks playlen, hitlen, pasthit;
 	float speed = 1.0f;
 	sh_note note;
+	sh_sample s;
 	sherr ret;
 
 	ret = SH_SUCCESS;
@@ -36,6 +37,8 @@ sherr sh_getsamples(sh_instrument* ins, sh_tick gticks, sh_hit* hit, size_t len,
 			ret = SH_DONE;
 		}
 		// oneshotters are handled by the above, because they set their lenght on start
+	} else {
+		hitlen = 0;
 	}
 
 	// for oneshotters, check end
@@ -80,11 +83,25 @@ sherr sh_getsamples(sh_instrument* ins, sh_tick gticks, sh_hit* hit, size_t len,
 			}			
 			break;
 		}
+		
+		s = ins->sound.points[i];
+		// Apply ADSR
 
-		// Apply ASDR
-		//TODO
+		if ((playlen + j) <= ins->A_ticks) {				// A
+			s *= ins->peak;
+			s *= (playlen + j) / (sh_sample)ins->A_ticks;
+		} else if ((playlen + j) <= (ins->A_ticks + ins->D_ticks)) {	// D
+			// d[i] *= peak - ((peak - sus) * ((i-A)/float(D)))
+			s *= ins->peak - ((ins->peak - ins->sus) * ((playlen+j - ins->A_ticks) / (sh_sample)ins->D_ticks));
+		} else {
+			s *= ins->sus;						// S
+		}
+		if (hitlen != 0) {
+			pasthit = gticks + j - hit->end;			// R
+			s *= (((sh_sample)ins->R_ticks) - pasthit) / (sh_sample)ins->R_ticks;
+		}
 
-		buf[j] += ins->sound.points[i];
+		buf[j] += s;
 	}
 	return ret;
 }
