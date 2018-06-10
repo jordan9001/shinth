@@ -66,9 +66,33 @@ sherr sh_input(sh_mixer* mixer, size_t index, sh_note note, sh_tick gticks, int 
 }
 
 sherr sh_fillbuf(sh_mixer* mixer, sh_tick start, sh_sample* buf, size_t buflen) {
+	size_t i;
+	size_t iins;
+	size_t hlen;
+	sh_instrument* ins;
+	sherr err;
 	// remove finished hits as you finish them
 	// Also update mixer hits cache thing
 	
 	// for each active hit
+	hlen = mixer->hits_len;
 	// have the instrument add to the buffer
+	for (i = mixer->low_used_hit; i != mixer->high_used_hit; i = (i+1) % hlen) {
+		iins = mixer->active_hits[i].instrument;
+		if (iins != INVALID_INS) {
+			ins = mixer->instruments[iins];
+			err = sh_getsamples(sh_instrument* ins, start, &(mixer->active_hits[i]), buflen, buf);
+			// if this hit is done, clear it by setting it's ins invalid
+			if (err == SH_DONE) {
+				mixer->active_hits[i].instrument = INVALID_INS;
+			} else if (!SH_OK(err)) {
+				return err;
+			}
+		}
+		// if it is the low_used_hit, up low_used hit to the next one
+		if (i == mixer->low_used_hit && mixer->active_hits[i].instrument != INVALID_INS) {
+			mixer->low_used_hit = (i+1) % hlen;
+		}
+	} 
+	return SH_SUCCESS;
 }

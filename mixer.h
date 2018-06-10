@@ -22,7 +22,7 @@ typedef struct {
 	size_t hits_len;
 
 	size_t low_used_hit;
-	size_t high_free_hit;
+	size_t high_used_hit;
 } sh_mixer;
 
 sherr sh_init_mixer(sh_mixer* mixer, sh_hit* hit_arr, size_t hit_arr_len);

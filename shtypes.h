@@ -9,6 +9,8 @@
 #define SH_NO_FREE_HIT	-2
 #define SH_UNKNOWN_HIT	-3
 
+#define SH_OK(err)	(err >= 0)
+
 typedef sherr int;
 
 // oneshot samples are triggered and track along the hit.curs
